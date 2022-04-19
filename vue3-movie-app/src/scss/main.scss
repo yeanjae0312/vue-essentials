@@ -1,0 +1,9 @@
+// Default variable overrides
+$primary: #FDC000; // node_modules의 부트스트랩 scss가 가지고 있는 변수명(variables파일) primary의 색을 재정의함
+
+// Required
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/mixins";
+
+@import '../../node_modules/bootstrap/scss/bootstrap.scss';
