@@ -1,4 +1,5 @@
 import axios from 'axios';
+import _uniqBy from 'lodash/uniqBy';
 
 export default {
   namespaced: true,
@@ -36,7 +37,7 @@ export default {
       const { Search, totalResults } = res.data
 
       commit('updateState', {
-        movies: Search,
+        movies: _uniqBy(Search, 'imdbID'), // _uniqBy : 중복되는 id 제거해주는 api
       })
       
       console.log(totalResults) // 305 => 31번 요청해야 함
@@ -49,12 +50,12 @@ export default {
       if (pageLength > 1) {
         for (let page=2; page<=pageLength; page++) {
           if (page > (number / 10)) break // number를 10보다 나눈 값보다 크면 for문을 멈춘다
-          
+
           // page 숫자가 달라짐
           const res = await axios.get(`https://www.omdbapi.com/?i=tt3896198&apikey=${OMDB_API_KEY}&s=${title}&type=${type}&y=${year}&page=${page}`);
           const { Search } = res.data
           commit('updateState', {
-            movies: [...state.movies, ...Search] // 기존의 movies 뒤에 Search를 붙이겠다.
+            movies: [...state.movies, ..._uniqBy(Search, 'imdbID')] // 기존의 movies 뒤에 Search를 붙이겠다.
           })
         }
       }
