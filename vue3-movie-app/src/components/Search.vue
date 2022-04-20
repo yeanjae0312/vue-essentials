@@ -33,8 +33,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   data() {
     return {
@@ -69,11 +67,12 @@ export default {
   },
   methods: {
     async apply() {
-      // Search movies...
-      // https://www.omdbapi.com/ 사이트 영화api 사용
-      const OMDB_API_KEY = '69213124'
-      const res = await axios.get(`https://www.omdbapi.com/?i=tt3896198&apikey=${OMDB_API_KEY}&s=${this.title}&type=${this.type}&y=${this.year}&page=1`); // https로 수정
-      console.log(res);
+      this.$store.dispatch('movie/searchMovies', {
+        title: this.title,
+        type: this.type,
+        number: this.number,
+        year: this.year,
+      });
     }
   }
 }
