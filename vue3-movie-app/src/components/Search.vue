@@ -4,7 +4,8 @@
       v-model="title"
       class="form-control"
       type="text"
-      placeholder="Search for Movies, Series & more" />
+      placeholder="Search for Movies, Series & more" 
+      @keyup.enter="apply" />
     <div class="selects">
       <select 
         v-for="filter in filters"
@@ -23,10 +24,17 @@
         </option>
       </select>
     </div>
+    <button
+      class="btn btn-primary"
+      @click="apply">
+      Apply
+    </button>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -58,6 +66,15 @@ export default {
         }
       ],
     }
+  },
+  methods: {
+    async apply() {
+      // Search movies...
+      // https://www.omdbapi.com/ 사이트 영화api 사용
+      const OMDB_API_KEY = '69213124'
+      const res = await axios.get(`https://www.omdbapi.com/?i=tt3896198&apikey=${OMDB_API_KEY}&s=${this.title}&type=${this.type}&y=${this.year}&page=1`); // https로 수정
+      console.log(res);
+    }
   }
 }
 </script>
@@ -76,6 +93,13 @@ export default {
       select {
         width: 120px;
       }
+    }
+
+    .btn {
+      width: 120px;
+      height: 50px;
+      font-weight: 700;
+      flex-shrink: 0; // 길이 비율이 줄어들지 않게 하겠다. 1이면 줄어들게 하겠다.
     }
   }
 </style>
