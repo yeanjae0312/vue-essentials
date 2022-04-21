@@ -28,37 +28,69 @@ export default {
   // 비동기
   actions: {
     async searchMovies({ state, commit }, payload) {
-      // Search movies...
-      // https://www.omdbapi.com/ 사이트 영화api 사용
-      const { title, type, number, year } = payload
-      const OMDB_API_KEY = '69213124'
+      try {
+        // Search movies...
+        // https://www.omdbapi.com/ 사이트 영화api 사용
 
-      const res = await axios.get(`https://www.omdbapi.com/?i=tt3896198&apikey=${OMDB_API_KEY}&s=${title}&type=${type}&y=${year}&page=1`); // https로 수정
-      const { Search, totalResults } = res.data
+        const res = await _fetchMovie({
+          ...payload,
+          page: 1
+        })
+        const { Search, totalResults } = res.data
 
-      commit('updateState', {
-        movies: _uniqBy(Search, 'imdbID'), // _uniqBy : 중복되는 id 제거해주는 api
-      })
-      
-      console.log(totalResults) // 305 => 31번 요청해야 함
-      console.log(typeof totalResults) // string
+        commit('updateState', {
+          movies: _uniqBy(Search, 'imdbID'), // _uniqBy : 중복되는 id 제거해주는 api
+        })
+        
+        console.log(totalResults) // 305 => 31번 요청해야 함
+        console.log(typeof totalResults) // string
 
-      const total = parseInt(totalResults, 10) // 10진법의 정수로 변환
-      const pageLength = Math.ceil(total / 10)
+        const total = parseInt(totalResults, 10) // 10진법의 정수로 변환
+        const pageLength = Math.ceil(total / 10)
 
-      //  추가 요청
-      if (pageLength > 1) {
-        for (let page=2; page<=pageLength; page++) {
-          if (page > (number / 10)) break // number를 10보다 나눈 값보다 크면 for문을 멈춘다
+        //  추가 요청
+        if (pageLength > 1) {
+          for (let page=2; page<=pageLength; page++) {
+            if (page > (payload.number / 10)) break // number를 10보다 나눈 값보다 크면 for문을 멈춘다
 
-          // page 숫자가 달라짐
-          const res = await axios.get(`https://www.omdbapi.com/?i=tt3896198&apikey=${OMDB_API_KEY}&s=${title}&type=${type}&y=${year}&page=${page}`);
-          const { Search } = res.data
-          commit('updateState', {
-            movies: [...state.movies, ..._uniqBy(Search, 'imdbID')] // 기존의 movies 뒤에 Search를 붙이겠다.
-          })
+            // page 숫자가 달라짐
+            const res = await _fetchMovie({
+              ...payload,
+              page
+            })
+            const { Search } = res.data
+            commit('updateState', {
+              movies: [...state.movies, ..._uniqBy(Search, 'imdbID')] // 기존의 movies 뒤에 Search를 붙이겠다.
+            })
+          }
         }
+      } catch (message) {
+        commit('updateSTate', {
+          movies: [],
+          message
+        })
       }
     }
   },
+}
+
+// 현재 파일 내부에서만 사용
+function _fetchMovie(payload) {
+  const { title, type, year, page } = payload
+  const OMDB_API_KEY = '69213124'
+  const url = `https://www.omdbapi.com/?i=tt3896198&apikey=${OMDB_API_KEY}&s=${title}&type=${type}&y=${year}&page=${page}` // https로 수정
+  // const url = `https://www.omdbapi.com/?i=tt3896198&apikey=${OMDB_API_KEY}` // 에러를 발생시키기 위해 작성한 코드
+
+  return new Promise((resolve, reject) => {
+    axios.get(url)
+      .then(res => {
+        if (res.data.Error) {
+          reject(res.data.Error)
+        }
+        resolve(res)
+      })
+      .catch(err => {
+        reject(err.message)
+      })
+  })
 }
