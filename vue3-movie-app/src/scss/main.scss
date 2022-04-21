@@ -1,5 +1,12 @@
 // Default variable overrides
 $primary: #FDC000; // node_modules의 부트스트랩 scss가 가지고 있는 변수명(variables파일) primary의 색을 재정의함
+$container-max-widths: (
+  sm: 540px,
+  md: 704px,
+  lg: 924px,
+  xl: 1140px,
+  xxl: 1364px
+);
 
 // Required
 @import "../../node_modules/bootstrap/scss/functions";
