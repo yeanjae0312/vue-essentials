@@ -6,7 +6,7 @@ export default {
   state: () => {
     return {
       movies: [],
-      message: '',
+      message: 'Search for the movie title!',
       loading: false,
     }
   },
@@ -28,6 +28,14 @@ export default {
   // 비동기
   actions: {
     async searchMovies({ state, commit }, payload) {
+      // loading이 true라면 함수가 실행되지 않도록 한다. (함수가 실행되고 있는데 엔터를 누르거나 apply버튼을 눌러 생기는 문제를 방지)
+      if (state.loading) return
+
+      commit('updateState', {
+        message: '',
+        loading: true,
+      })
+
       try {
         // Search movies...
         // https://www.omdbapi.com/ 사이트 영화api 사용
@@ -68,6 +76,10 @@ export default {
         commit('updateSTate', {
           movies: [],
           message
+        })
+      } finally {
+        commit('updateState', {
+          loading: false,
         })
       }
     }
