@@ -23,7 +23,7 @@
       v-else
       class="movie-details">
       <div
-        :style="{ backgroundImage: `url(${theMovie.Poster})` }"
+        :style="{ backgroundImage: `url(${reqquestDiffSizeImage(theMovie.Poster)})` }"
         class="poster"></div>
       <div class="specs">
         <div class="title">
@@ -93,6 +93,11 @@ export default {
       // movie/tt123456
       id: this.$route.params.id
     })
+  },
+  methods: {
+    reqquestDiffSizeImage(url, size = 700) { // 기본 사이즈 700으로 설정
+      return url.replace('SX300', `SX700${size}`)
+    }
   }
 }
 </script>
